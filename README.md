@@ -24,6 +24,20 @@ MedAce AI is built to mirror the real exam experience, not abstract away from it
 
 ---
 
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Fill in your Supabase, Gemini, and DB keys
+
+# Start development server
+npm run dev
+```
+
 ### Environment Variables
 
 ```env
@@ -37,7 +51,6 @@ GEMINI_API_KEY=...
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-
 ```
 
 ## License
