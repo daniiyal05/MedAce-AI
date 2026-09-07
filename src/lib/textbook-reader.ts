@@ -17,15 +17,9 @@ function loadChapterContent(chapterNum: number): string {
   try {
     if (fs.existsSync(TEXTBOOKS_DIR)) {
       const files = fs.readdirSync(TEXTBOOKS_DIR);
-      // Find file starting with Chapter_<chapterNum>_ or Chapter_<chapterNum>
-      const match = files.find((file) => {
-        const lower = file.toLowerCase();
-        return (
-          lower.startsWith(`chapter_${chapterNum}_`) ||
-          lower.startsWith(`chapter_${chapterNum}.`) ||
-          lower.startsWith(`chapter_${chapterNum} `)
-        );
-      });
+      // Regex matches Chapter_<chapterNum> followed by non-digit char (e.g. Chapter_1_, Chapter_1 , Chapter_1., Chapter_8,)
+      const regex = new RegExp(`^chapter_${chapterNum}[^0-9]`, "i");
+      const match = files.find((file) => regex.test(file.toLowerCase().trim()));
 
       if (match) {
         content = fs.readFileSync(path.join(TEXTBOOKS_DIR, match), "utf-8") || "";
@@ -41,9 +35,10 @@ function loadChapterContent(chapterNum: number): string {
 }
 
 /**
- * Finds and reads the textbook extracted file for a given chapter number (1-15)
+ * Finds and reads the textbook extracted file for a given chapter number (1-15).
+ * Returns up to maxChars of RAG textbook content for that chapter.
  */
-export function getTextbookContextForChapter(chapterNum: number, maxChars = 8000): string {
+export function getTextbookContextForChapter(chapterNum: number, maxChars = 24000): string {
   const content = loadChapterContent(chapterNum);
   if (!content) return "";
 

@@ -9,15 +9,15 @@ const footerLinks = {
     { label: "Dashboard", href: "/dashboard" },
   ],
   resources: [
-    { label: "How It Works", href: "/#how-it-works" },
-    { label: "MDCAT Syllabus", href: "#" },
-    { label: "FAQ", href: "#" },
+    { label: "How It Works", href: "/how-it-works" },
+    { label: "MDCAT Syllabus", href: "/syllabus" },
+    { label: "FAQ", href: "/faq" },
   ],
   company: [
-    { label: "About", href: "#" },
-    { label: "Contact", href: "mailto:hello@medace.ai" },
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Service", href: "/terms" },
   ],
 };
 

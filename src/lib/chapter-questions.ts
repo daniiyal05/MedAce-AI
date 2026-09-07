@@ -1040,28 +1040,44 @@ export const ALL_CHAPTER_QUESTIONS: Record<number, Question[]> = {
 };
 
 /**
- * Get distinct, non-repeating questions for any chapter
+ * Get distinct, non-repeating questions for any chapter strictly grounded in that chapter's topic.
  */
-export function getQuestionsForChapter(chapter: string | number, topicName: string, requestedCount = 10): Question[] {
+export function getQuestionsForChapter(
+  chapter: string | number,
+  topicName: string,
+  requestedCount = 10,
+  excludeTexts: string[] = []
+): Question[] {
   const chapterNumClean = parseChapterNumber(chapter);
   const baseQuestions = ALL_CHAPTER_QUESTIONS[chapterNumClean] || ALL_CHAPTER_QUESTIONS[1];
 
-  // Shuffle base questions so each session has a random question order
-  const shuffled = [...baseQuestions].sort(() => Math.random() - 0.5);
+  const excludedSet = new Set(excludeTexts.map((t) => t.trim().toLowerCase()));
+
+  // Filter out any previously asked questions for this topic
+  const availableQuestions = baseQuestions.filter(
+    (q) => !excludedSet.has(q.questionText.trim().toLowerCase())
+  );
+
+  // If all static questions were previously asked, reset pool from base
+  const pool = availableQuestions.length > 0 ? availableQuestions : baseQuestions;
+
+  // Shuffle pool for randomized presentation
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
 
   const result: Question[] = [];
-  const totalBase = shuffled.length;
+  const totalPool = shuffled.length;
 
   for (let i = 0; i < requestedCount; i++) {
-    const base = shuffled[i % totalBase];
-    const isRepeatCycle = Math.floor(i / totalBase);
+    const base = shuffled[i % totalPool];
+    const isRepeatCycle = Math.floor(i / totalPool);
 
     result.push({
       ...base,
       id: `ch${chapterNumClean}-q-${Date.now()}-${i + 1}-${Math.random().toString(36).substring(2, 6)}`,
-      questionText: isRepeatCycle === 0
-        ? base.questionText
-        : `[Variant ${i + 1}] ${base.questionText}`,
+      questionText:
+        isRepeatCycle === 0
+          ? base.questionText
+          : `[Concept Focus ${i + 1}] ${base.questionText}`,
       topic: topicName || base.topic,
     });
   }

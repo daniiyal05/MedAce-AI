@@ -23,7 +23,6 @@ export async function POST(req: NextRequest) {
     const chapterNum = parseChapterNumber(chapter);
 
     // Kick off the auth check immediately — it resolves in the background
-    // while the (slow) embedding + AI generation work runs.
     const userPromise = (async () => {
       const supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
@@ -34,16 +33,33 @@ export async function POST(req: NextRequest) {
     const sessionId = crypto.randomUUID();
     let chunkIds: string[] = [];
 
-    // 1. Load reference textbook content directly from rag/textbooks extracted files
-    let contextText = getTextbookContextForChapter(chapterNum);
+    // 1. Fetch previously asked question texts for this chapter to prevent question repetition
+    let previousQuestionTexts: string[] = [];
+    try {
+      const { data: pastQs } = await supabaseAdmin
+        .from("quiz_questions")
+        .select("question_text")
+        .eq("chapter_num", chapterNum)
+        .order("created_at", { ascending: false })
+        .limit(100);
 
-    // If local textbook file is read, enhance with vector RAG search if available
+      if (pastQs && pastQs.length > 0) {
+        previousQuestionTexts = pastQs.map((q: { question_text: string }) => q.question_text);
+      }
+    } catch {
+      // Optional DB lookup
+    }
+
+    // 2. Load reference textbook content directly from rag/textbooks extracted file for this chapter
+    let contextText = getTextbookContextForChapter(chapterNum, 24000);
+
+    // Enhance with vector RAG search filtered strictly by chapter_num
     try {
       const embedding = await generateEmbedding(`${topic} Chapter ${chapterNum}`);
       const { data: chunks, error } = await supabaseAdmin.rpc("match_chunks", {
         query_embedding: embedding,
         match_threshold: 0.1,
-        match_count: 4,
+        match_count: 5,
         filter_chapter: String(chapterNum),
       });
 
@@ -60,10 +76,25 @@ export async function POST(req: NextRequest) {
       contextText = `Topic: ${topic}, Chapter ${chapterNum}. Standard MDCAT syllabus guidelines.`;
     }
 
-    // 2. Generate unique, high-yield questions using Gemini AI from the textbook text
+    // 3. Generate unique, topic-isolated questions using Gemini AI from RAG text
     try {
+      const pastQuestionsBlock =
+        previousQuestionTexts.length > 0
+          ? `PREVIOUSLY ASKED QUESTIONS (DO NOT REPEAT OR GENERATE SIMILAR QUESTIONS TO ANY OF THESE):\n` +
+            previousQuestionTexts
+              .slice(-40)
+              .map((q, i) => `${i + 1}. ${q}`)
+              .join("\n") +
+            "\n"
+          : "";
+
       const prompt = `
 You are an expert medical educator creating high-yield MDCAT (Medical and Dental College Admission Test) Multiple Choice Questions.
+
+CRITICAL MANDATES:
+1. STRICT RAG GROUNDING: Generate ALL questions STRICTLY and EXCLUSIVELY from the provided Reference Textbook Content for Chapter ${chapterNum} (${topic}). Base every question, option, and explanation directly on facts in this textbook text.
+2. STRICT TOPIC ISOLATION: You are generating questions ONLY for ${topic} (Chapter ${chapterNum}). Do NOT include questions or concepts from any other chapter or topic.
+3. NO QUESTION REPETITION: Every single question MUST be unique and cover distinct subtopics. Do NOT repeat previous questions.
 
 Topic: ${topic}
 Chapter Number: ${chapterNum}
@@ -71,16 +102,17 @@ Difficulty Level: ${difficulty}
 Total Questions Required: ${count}
 
 Reference Textbook Content (Chapter ${chapterNum}):
-${contextText.slice(0, 6000)}
+${contextText.slice(0, 18000)}
 
+${pastQuestionsBlock}
 Instructions:
-1. Generate exactly ${count} NEW, unique, high-yield multiple choice questions specifically testing ${topic} (Chapter ${chapterNum}) and its subtopics from the textbook text provided.
+1. Generate exactly ${count} NEW, unique, high-yield multiple choice questions testing ${topic} (Chapter ${chapterNum}).
 2. Each question MUST cover distinct subtopics and concepts from Chapter ${chapterNum}.
 3. Each question MUST have 4 distinct, plausible options labeled A, B, C, D.
 4. Include the exact correct answer ("A", "B", "C", or "D").
 5. Provide a clear, detailed English explanation (explanationEn).
-6. Provide an accurate, high-yield Urdu explanation (explanationUr) written in natural Roman/Urdu script.
-7. Ensure questions strictly match the requested difficulty: ${difficulty}.
+6. Provide an accurate, high-yield Roman Urdu explanation (explanationUr) written in natural Roman Urdu.
+7. Ensure questions match the requested difficulty: ${difficulty}.
 
 Return JSON in this EXACT schema format:
 {
@@ -115,38 +147,53 @@ Return JSON in this EXACT schema format:
       }>(prompt);
 
       if (aiResult && Array.isArray(aiResult.questions) && aiResult.questions.length > 0) {
-        generatedQuestions = aiResult.questions.map((q, idx) => ({
-          id: crypto.randomUUID(),
-          sessionId,
-          questionText: q.questionText,
-          optionA: q.optionA,
-          optionB: q.optionB,
-          optionC: q.optionC,
-          optionD: q.optionD,
-          correctAnswer: q.correctAnswer,
-          explanationEn: q.explanationEn,
-          explanationUr: q.explanationUr,
-          difficulty: q.difficulty || (difficulty === "Mixed" ? (idx % 2 === 0 ? "Easy" : "Medium") : difficulty),
-          topic,
-        }));
+        const seenTexts = new Set(previousQuestionTexts.map((t) => t.trim().toLowerCase()));
+        const uniqueBatch: Question[] = [];
+
+        for (const q of aiResult.questions) {
+          const norm = q.questionText.trim().toLowerCase();
+          if (!seenTexts.has(norm)) {
+            seenTexts.add(norm);
+            uniqueBatch.push({
+              id: crypto.randomUUID(),
+              sessionId,
+              questionText: q.questionText,
+              optionA: q.optionA,
+              optionB: q.optionB,
+              optionC: q.optionC,
+              optionD: q.optionD,
+              correctAnswer: q.correctAnswer,
+              explanationEn: q.explanationEn,
+              explanationUr: q.explanationUr,
+              difficulty:
+                q.difficulty || (difficulty === "Mixed" ? (uniqueBatch.length % 2 === 0 ? "Easy" : "Medium") : difficulty),
+              topic,
+            });
+          }
+        }
+        generatedQuestions = uniqueBatch;
       }
     } catch (aiErr) {
-      console.warn("AI generation fallback to chapter questions database:", aiErr);
+      console.warn("AI generation fallback to chapter RAG question generator:", aiErr);
     }
 
-    // 3. Fallback to Chapter Question Generator if AI API key is not configured
+    // 4. Fallback to Chapter Question Generator with anti-repetition and topic isolation guarantees
     if (generatedQuestions.length === 0) {
-      generatedQuestions = getQuestionsForChapter(chapterNum, topic, count).map((q) => ({
+      generatedQuestions = getQuestionsForChapter(
+        chapterNum,
+        topic,
+        count,
+        previousQuestionTexts
+      ).map((q) => ({
         ...q,
         sessionId,
       }));
     }
 
-    // 4. Save session to database if authenticated
+    // 5. Save session to database if authenticated
     const user = await userPromise;
 
     if (user) {
-      // Insert the session row first (quiz_questions rows reference it via FK)
       await supabaseAdmin.from("quiz_sessions").insert({
         id: sessionId,
         user_id: user.id,
