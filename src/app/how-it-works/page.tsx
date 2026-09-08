@@ -201,7 +201,7 @@ export default function HowItWorksPage() {
                               />
                             </div>
                             <div className="p-3 rounded-lg bg-bg/50 border border-white/5 text-xs font-mono text-muted space-y-1">
-                              <p className="text-primary font-semibold">// Live Diagnostic Execution</p>
+                              <p className="text-primary font-semibold">{"// Live Diagnostic Execution"}</p>
                               <p>&gt; Indexing concepts...</p>
                               <p>&gt; Calculating accuracy weight...</p>
                               <p className="text-success">&gt; Ready for student interaction</p>
