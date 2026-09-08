@@ -16,10 +16,10 @@ export default function FeaturesSection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="features" ref={ref} className="py-20 sm:py-28 bg-surface/30">
+    <section id="features" ref={ref} className="py-16 sm:py-28 bg-surface/30">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          className="text-center mb-14"
+          className="text-center mb-10 sm:mb-14"
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
@@ -28,12 +28,12 @@ export default function FeaturesSection() {
             <Sparkles className="h-3 w-3" />
             Smart Features
           </Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold">
+          <h2 className="text-2xl sm:text-4xl font-bold">
             Built for how students{" "}<span className="gradient-text">actually learn</span>
           </h2>
         </motion.div>
 
-        <div className="space-y-8">
+        <div className="space-y-4 sm:space-y-8">
           {features.map((f, i) => (
             <motion.div
               key={f.title}
@@ -44,10 +44,10 @@ export default function FeaturesSection() {
               <Card
                 hoverable
                 padding="lg"
-                className={`flex flex-col ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"} items-start md:items-center gap-6 hover:border-primary/20 transition-colors`}
+                className={`flex flex-col items-start gap-4 sm:gap-6 ${i % 2 === 0 ? "sm:flex-row" : "sm:flex-row-reverse"} sm:items-center hover:border-primary/20 transition-colors`}
               >
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                  <f.icon className="h-7 w-7 text-primary" />
+                <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                  <f.icon className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">

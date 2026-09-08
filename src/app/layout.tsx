@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
@@ -8,6 +8,14 @@ const inter = Inter({
   variable: "--font-sans",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#0a0f1a",
+  colorScheme: "dark",
+};
 
 export const metadata: Metadata = {
   title: "MedAce AI — Adaptive MDCAT Prep Coach",
@@ -48,7 +56,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" dir="ltr" className={inter.variable}>
-      <body className="bg-bg text-text font-sans antialiased min-h-screen">
+      <body className="bg-bg text-text font-sans antialiased min-h-screen overflow-x-hidden">
         <Providers>{children}</Providers>
       </body>
     </html>

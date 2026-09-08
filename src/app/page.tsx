@@ -42,7 +42,7 @@ const stagger: Variants = {
    =========================== */
 function HeroSection() {
   return (
-    <section className="relative overflow-hidden min-h-[90vh] flex items-center">
+    <section className="relative overflow-hidden min-h-[85vh] sm:min-h-[90vh] flex items-center">
       {/* Animated gradient mesh background */}
       <div className="absolute inset-0 gradient-mesh" />
       {/* Dot grid pattern */}
@@ -54,8 +54,8 @@ function HeroSection() {
         }}
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 pb-24 sm:pt-28 sm:pb-32 w-full">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-16 sm:pt-28 sm:pb-32 w-full">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
           {/* Left: Copy with staggered entrance */}
           <motion.div
             className="space-y-8"
@@ -73,7 +73,7 @@ function HeroSection() {
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
+              className="text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight"
             >
               Your MDCAT Prep,{" "}
               <span className="gradient-text">Powered by AI</span>
@@ -82,7 +82,7 @@ function HeroSection() {
             <motion.p
               variants={fadeUp}
               custom={2}
-              className="text-lg text-muted max-w-xl leading-relaxed"
+              className="text-base sm:text-lg text-muted max-w-xl leading-relaxed"
             >
               Adaptive practice. Urdu explanations. Weak-spot tracking. All built
               for the real exam — with questions generated from actual MDCAT
@@ -92,16 +92,16 @@ function HeroSection() {
             <motion.div
               variants={fadeUp}
               custom={3}
-              className="flex flex-wrap gap-4"
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4"
             >
-              <Link href="/signup">
-                <Button size="lg" glow>
+              <Link href="/signup" className="w-full sm:w-auto">
+                <Button size="lg" glow className="w-full sm:w-auto justify-center">
                   Start Practicing
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <a href="#how-it-works">
-                <Button variant="ghost" size="lg">
+              <a href="#how-it-works" className="w-full sm:w-auto">
+                <Button variant="ghost" size="lg" className="w-full sm:w-auto justify-center">
                   See How It Works
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -109,12 +109,12 @@ function HeroSection() {
             </motion.div>
 
             {/* Social proof */}
-            <motion.div variants={fadeUp} custom={4} className="flex items-center gap-4 pt-4">
+            <motion.div variants={fadeUp} custom={4} className="flex items-center gap-3 sm:gap-4 pt-2 sm:pt-4">
               <div className="flex -space-x-2">
                 {["bg-primary", "bg-accent", "bg-info", "bg-success"].map((bg, i) => (
                   <div
                     key={i}
-                    className={`h-8 w-8 rounded-full ${bg} border-2 border-bg flex items-center justify-center text-[10px] text-white font-bold`}
+                    className={`h-7 w-7 sm:h-8 sm:w-8 rounded-full ${bg} border-2 border-bg flex items-center justify-center text-[9px] sm:text-[10px] text-white font-bold`}
                   >
                     {String.fromCharCode(65 + i)}
                   </div>
@@ -224,7 +224,7 @@ export default function HomePage() {
   return (
     <>
       <Navbar variant="landing" />
-      <main>
+      <main className="overflow-hidden">
         <HeroSection />
         <ProblemSection />
         <FeaturesSection />

@@ -16,24 +16,24 @@ export default function ProblemSection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-20 sm:py-28">
+    <section ref={ref} className="py-16 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          className="text-center mb-14"
+          className="text-center mb-10 sm:mb-14"
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl sm:text-4xl font-bold">
+          <h2 className="text-2xl sm:text-4xl font-bold">
             MDCAT prep is{" "}<span className="text-error">broken</span> for most students
           </h2>
-          <p className="mt-4 text-muted max-w-2xl mx-auto">
+          <p className="mt-3 sm:mt-4 text-muted text-sm sm:text-base max-w-2xl mx-auto">
             Millions prepare for MDCAT every year, yet most lack the tools to
             study smart. Here&apos;s what we&apos;re fixing.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {problems.map((p, i) => (
             <motion.div
               key={p.title}

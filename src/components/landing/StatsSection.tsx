@@ -48,9 +48,9 @@ export default function StatsSection() {
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <section ref={ref} className="py-16 bg-surface/30">
+    <section ref={ref} className="py-12 sm:py-16 bg-surface/30">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
@@ -64,14 +64,14 @@ export default function StatsSection() {
                   <s.icon className="h-6 w-6 text-primary" />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-bold text-text">
+              <p className="text-xl sm:text-3xl font-bold text-text">
                 {typeof s.value === "number" ? (
                   <AnimatedCounter value={s.value} suffix={s.suffix} />
                 ) : (
                   <>{s.value}</>
                 )}
               </p>
-              <p className="text-sm text-muted">{s.label}</p>
+              <p className="text-xs sm:text-sm text-muted">{s.label}</p>
             </motion.div>
           ))}
         </div>

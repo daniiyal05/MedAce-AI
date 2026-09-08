@@ -11,7 +11,7 @@ export default function CTASection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-20 sm:py-28">
+    <section ref={ref} className="py-16 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -22,9 +22,9 @@ export default function CTASection() {
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
             {/* Animated gradient border */}
             <div className="absolute inset-0 rounded-xl gradient-border" />
-            <div className="relative px-8 py-16 sm:py-20 text-center space-y-6">
+            <div className="relative px-6 py-12 sm:px-8 sm:py-20 text-center space-y-5 sm:space-y-6">
               <motion.h2
-                className="text-3xl sm:text-4xl font-bold"
+                className="text-2xl sm:text-4xl font-bold"
                 initial={{ opacity: 0, y: 20 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.2 }}
@@ -32,7 +32,7 @@ export default function CTASection() {
                 Ready to ace MDCAT?
               </motion.h2>
               <motion.p
-                className="text-muted max-w-lg mx-auto"
+                className="text-sm sm:text-base text-muted max-w-lg mx-auto"
                 initial={{ opacity: 0, y: 20 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.3 }}

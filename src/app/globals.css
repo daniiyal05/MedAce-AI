@@ -80,12 +80,19 @@
     border-color: var(--color-border);
   }
 
+  html {
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    min-width: 320px;
   }
 
   h1,
@@ -98,10 +105,10 @@
     line-height: 1.2;
   }
 
-  /* Custom scrollbar with gradient thumb */
+  /* Custom scrollbar with gradient thumb (vertical only — horizontal hidden) */
   ::-webkit-scrollbar {
     width: 8px;
-    height: 8px;
+    height: 0;
   }
 
   ::-webkit-scrollbar-track {
@@ -115,6 +122,12 @@
 
   ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, var(--color-primary-light), var(--color-accent-light));
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary) var(--color-bg);
   }
 
   /* Dark mode dropdown select option styling */
@@ -237,6 +250,22 @@
 
   .animate-pulse-glow {
     animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  /* Tap highlight removal for mobile */
+  a, button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth image loading */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Prevent text overflow */
+  h1, h2, h3, h4, h5, h6, p {
+    overflow-wrap: break-word;
   }
 
   .safe-bottom {

@@ -62,7 +62,10 @@ export default function Navbar({ variant = "landing", userName }: NavbarProps) {
         compact ? "h-14" : "h-16",
         variant === "app"
           ? "glass-nav border-b border-white/5"
-          : "bg-transparent"
+          : cn(
+              "bg-bg/80 backdrop-blur-md",
+              compact && "bg-bg/95 border-b border-white/5"
+            )
       )}
     >
       <nav className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -138,7 +141,7 @@ export default function Navbar({ variant = "landing", userName }: NavbarProps) {
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden rounded-lg p-2 text-muted hover:text-text hover:bg-surface-hover transition-colors cursor-pointer"
+          className="md:hidden rounded-lg p-2.5 text-muted hover:text-text hover:bg-surface-hover transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label="Toggle menu"
         >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -189,7 +192,7 @@ export default function Navbar({ variant = "landing", userName }: NavbarProps) {
                             href={item.href}
                             onClick={() => setMobileOpen(false)}
                             className={cn(
-                              "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
+                              "flex items-center gap-3 px-3 py-3.5 rounded-lg text-sm font-medium transition-colors min-h-[48px]",
                               isActive
                                 ? "text-primary bg-primary/10"
                                 : "text-muted hover:text-text hover:bg-surface-hover"
@@ -207,7 +210,7 @@ export default function Navbar({ variant = "landing", userName }: NavbarProps) {
                         <Link
                           href="/login"
                           onClick={() => setMobileOpen(false)}
-                          className="block px-3 py-3 text-sm font-medium text-muted hover:text-text"
+                          className="block px-3 py-3.5 text-sm font-medium text-muted hover:text-text min-h-[48px] flex items-center"
                         >
                           Sign In
                         </Link>
@@ -216,7 +219,7 @@ export default function Navbar({ variant = "landing", userName }: NavbarProps) {
                         <Link
                           href="/signup"
                           onClick={() => setMobileOpen(false)}
-                          className="block rounded-lg bg-gradient-to-r from-primary to-primary-dark px-3 py-3 text-center text-sm font-medium text-white mt-3"
+                          className="block rounded-lg bg-gradient-to-r from-primary to-primary-dark px-3 py-3.5 text-center text-sm font-medium text-white mt-3 min-h-[48px] flex items-center justify-center"
                         >
                           Get Started
                         </Link>
