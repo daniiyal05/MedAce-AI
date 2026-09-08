@@ -253,8 +253,16 @@
   }
 
   /* Tap highlight removal for mobile */
-  a, button {
+  a, button, .tap-transparent {
     -webkit-tap-highlight-color: transparent;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
   /* Smooth image loading */

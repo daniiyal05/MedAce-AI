@@ -2,72 +2,111 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { CheckCircle2, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui";
 
 const steps = [
-  { num: "01", title: "Choose a Topic", description: "Pick from 15 MDCAT Biology chapters. Filter by category or jump straight to your weakest area." },
-  { num: "02", title: "AI Generates Your MCQs", description: "Our RAG pipeline retrieves relevant textbook content and generates high-quality MCQs grounded in the actual MDCAT syllabus." },
-  { num: "03", title: "Learn from Your Mistakes", description: "Get instant feedback with detailed explanations in English or Urdu. Weak-spot tracking directs your next practice session." },
+  {
+    num: "01",
+    tag: "chapter selection",
+    title: "Choose Any of the 15 Biology Chapters",
+    description:
+      "Select a chapter from Human Physiology, Modern Topics, or Pharmacology, or let the diagnostic tracker pick your lowest-accuracy topic for focused remediation.",
+    pills: ["15 Chapters", "160+ Subtopics", "Custom Question Counts"],
+  },
+  {
+    num: "02",
+    tag: "exam simulation",
+    title: "Solve Authentic English MCQs",
+    description:
+      "Practice with questions formatted to mirror test-day conditions, complete with realistic distractors and standard 45-second exam pacing.",
+    pills: ["English Interface", "45s Timer Pacing", "PMDC Aligned"],
+  },
+  {
+    num: "03",
+    tag: "bilingual remediation",
+    title: "Unpack Mistakes in Roman Urdu",
+    description:
+      "Whenever you miss a question, read the explanation in plain Roman Urdu. Scientific terms stay in English, but the reasoning is explained simply so the concept clicks.",
+    pills: ["Code-Mixed Urdu", "Textbook Verified", "Instant Feedback"],
+  },
+  {
+    num: "04",
+    tag: "adaptive tracking",
+    title: "Auto-Log to Your Weak-Spot Radar",
+    description:
+      "Your session score updates your chapter accuracy radar automatically, highlighting remaining gaps and feeding your personalized study plan.",
+    pills: ["Accuracy Breakdown", "Study Plan Sync", "Targeted Re-tests"],
+  },
 ];
 
 export default function HowItWorksSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="how-it-works" ref={ref} className="py-16 sm:py-28">
+    <section id="how-it-works" ref={ref} className="py-20 sm:py-28 relative bg-[#070b16]/70 border-y border-white/5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
         <motion.div
-          className="text-center mb-10 sm:mb-14"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-center max-w-3xl mx-auto mb-16 space-y-4"
+          initial={{ opacity: 0, y: 25 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
         >
-          <h2 className="text-2xl sm:text-4xl font-bold">How it works</h2>
-          <p className="mt-3 sm:mt-4 text-muted text-sm sm:text-base">Three simple steps to smarter MDCAT prep.</p>
+          <div className="inline-flex items-center gap-2 rounded-full px-3.5 py-1 glass-pill border-white/10 text-slate-300 text-xs font-mono">
+            How It Works
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            From Diagnostic Practice to{" "}
+            <span className="gradient-text">Concept Retention</span>
+          </h2>
+          <p className="text-base sm:text-lg text-muted leading-relaxed">
+            A structured, 4-step learning loop designed to replace blind memorization with
+            genuine biological understanding.
+          </p>
         </motion.div>
 
-        <div className="relative max-w-2xl mx-auto">
-          {/* Animated vertical line */}
-          <svg className="absolute left-5 top-0 h-full w-1 sm:left-6 md:left-1/2" viewBox="0 0 4 400" preserveAspectRatio="none">
-            <motion.line
-              x1="2" y1="0" x2="2" y2="400"
-              stroke="url(#lineGrad)"
-              strokeWidth="2"
-              initial={{ pathLength: 0 }}
-              animate={inView ? { pathLength: 1 } : {}}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-            />
-            <defs>
-              <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#14b8a6" />
-                <stop offset="100%" stopColor="#8b5cf6" />
-              </linearGradient>
-            </defs>
-          </svg>
-
-          <div className="space-y-10 sm:space-y-12">
-            {steps.map((s, i) => (
-              <motion.div
-                key={s.num}
-                className="relative flex items-start gap-4 sm:gap-6"
-                initial={{ opacity: 0, x: -20 }}
-                animate={inView ? { opacity: 1, x: 0 } : {}}
-                transition={{ delay: 0.3 + i * 0.2, type: "spring", damping: 20 }}
-              >
-                <motion.div
-                  className="relative z-10 flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-white font-bold text-xs sm:text-sm shadow-lg shadow-primary/20"
-                  animate={inView ? { scale: [0.8, 1.1, 1] } : {}}
-                  transition={{ delay: 0.5 + i * 0.2, duration: 0.5 }}
-                >
-                  {s.num}
-                </motion.div>
-                <div className="pt-1">
-                  <h3 className="text-lg font-semibold mb-1">{s.title}</h3>
-                  <p className="text-sm text-muted leading-relaxed">{s.description}</p>
+        {/* 4 Step Cards Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {steps.map((s, i) => (
+            <motion.div
+              key={s.num}
+              initial={{ opacity: 0, y: 25 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: i * 0.1, duration: 0.4 }}
+              className="relative rounded-2xl sm:rounded-3xl border border-white/10 bg-[#0c1222]/90 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover:border-primary/40 transition-all duration-300 group"
+            >
+              <div>
+                {/* Header: Large Hollow Number & Tag */}
+                <div className="flex items-center justify-between mb-5">
+                  <span className="font-mono text-3xl font-black text-primary-light/40 group-hover:text-primary-light transition-colors">
+                    {s.num}
+                  </span>
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-muted px-2 py-0.5 rounded bg-white/5 border border-white/5">
+                    {s.tag}
+                  </span>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+
+                <h3 className="text-base font-bold text-white mb-2.5 leading-snug">{s.title}</h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6">
+                  {s.description}
+                </p>
+              </div>
+
+              {/* Tag Pills */}
+              <div className="pt-4 border-t border-white/10 flex flex-wrap gap-1.5">
+                {s.pills.map((pill) => (
+                  <span
+                    key={pill}
+                    className="font-mono text-[10px] px-2 py-0.5 rounded bg-surface text-slate-400 border border-white/5"
+                  >
+                    {pill}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
