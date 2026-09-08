@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
 const protectedRoutes = [
   "/dashboard",
@@ -10,30 +11,57 @@ const protectedRoutes = [
   "/profile",
 ];
 
-const publicRoutes = ["/", "/login", "/signup"];
+const authRoutes = ["/login", "/signup"];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check if route is protected
+  const supabaseResponse = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet: Array<{ name: string; value: string; options?: Parameters<typeof supabaseResponse.cookies.set>[2] }>) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const isProtected = protectedRoutes.some(
     (route) => pathname === route || pathname.startsWith(route + "/")
   );
+  const isAuthRoute = authRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + "/")
+  );
 
-  if (isProtected) {
-    // In production, check Supabase session via cookie
-    // For now (frontend-only with mock data), we allow all routes through
-    // Uncomment below when Supabase auth is wired up:
-    //
-    // const supabaseAuthToken = request.cookies.get("sb-access-token");
-    // if (!supabaseAuthToken) {
-    //   const loginUrl = new URL("/login", request.url);
-    //   loginUrl.searchParams.set("redirect", pathname);
-    //   return NextResponse.redirect(loginUrl);
-    // }
+  // Redirect unauthenticated users away from protected routes
+  if (isProtected && !user) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  // Redirect authenticated users away from login/signup
+  if (isAuthRoute && user) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  return supabaseResponse;
 }
 
 export const config = {

@@ -1,17 +1,19 @@
 "use client";
 
-import { ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { ReactNode, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import { useAuth } from "@/components/auth/AuthProvider";
 import {
   LayoutDashboard,
   BookOpen,
   Calendar,
   User,
+  Loader2,
 } from "lucide-react";
 
 const mobileNavItems = [
@@ -27,6 +29,33 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      const loginUrl = new URL("/login", window.location.origin);
+      loginUrl.searchParams.set("redirect", pathname);
+      router.replace(loginUrl.toString());
+    }
+  }, [user, loading, pathname, router]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-bg">

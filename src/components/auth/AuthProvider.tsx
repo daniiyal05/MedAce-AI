@@ -169,7 +169,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // If Supabase not configured or error, fallback to local storage session or default
+      // If Supabase not configured or error, fallback to local storage session
       if (mounted) {
         const localSaved = typeof window !== "undefined" ? localStorage.getItem(LOCAL_STORAGE_KEY) : null;
         if (localSaved) {
@@ -178,15 +178,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           } catch {
             setUserState(null);
           }
-        } else {
-          // Initial starter session if no session exists yet
-          const initialUser: AuthUser = {
-            id: "user-local-1",
-            email: "student@example.com",
-            fullName: "Medical Student",
-          };
-          setUserState(initialUser);
-          saveLocalSession(initialUser);
         }
         setLoading(false);
       }

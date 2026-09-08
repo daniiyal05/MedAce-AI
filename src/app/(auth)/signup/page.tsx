@@ -42,13 +42,8 @@ export default function SignupPage() {
       supabaseUrl.includes("your-supabase-url");
 
     if (isPlaceholder) {
-      setUser({
-        id: `user-${Date.now()}`,
-        email: email || "student@example.com",
-        fullName: fullName || "Medical Student",
-        provider: "email",
-      });
-      router.push("/dashboard");
+      setError("Authentication service not configured. Please contact support.");
+      setLoading(false);
       return;
     }
 
@@ -63,20 +58,6 @@ export default function SignupPage() {
       });
 
       if (authError) {
-        if (
-          authError.message.includes("Invalid API key") ||
-          authError.message.includes("fetch failed") ||
-          authError.message.includes("Failed to fetch")
-        ) {
-          setUser({
-            id: `user-${Date.now()}`,
-            email: email || "student@example.com",
-            fullName: fullName || "Medical Student",
-            provider: "email",
-          });
-          router.push("/dashboard");
-          return;
-        }
         setError(authError.message);
         setLoading(false);
         return;
@@ -93,13 +74,8 @@ export default function SignupPage() {
 
       router.push("/dashboard");
     } catch {
-      setUser({
-        id: `user-${Date.now()}`,
-        email: email || "student@example.com",
-        fullName: fullName || "Medical Student",
-        provider: "email",
-      });
-      router.push("/dashboard");
+      setError("An unexpected error occurred. Please try again.");
+      setLoading(false);
     }
   };
 
